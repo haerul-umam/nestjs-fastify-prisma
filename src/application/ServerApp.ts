@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import { loggerInstance } from '@infrastructure/config/logger.config';
-import { RootModule } from './di/1.root.module';
+import { RootModule } from './di/root.module';
 import { IEnvVariables } from './interfaces/env.interface';
 
 export class ServerApplication {
