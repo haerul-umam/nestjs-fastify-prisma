@@ -27,12 +27,15 @@ import { PrismaService } from 'src/infrastructure/database/prisma/prisma.service
           // https://papooch.github.io/nestjs-cls/plugins/available-plugins/transactional/prisma-adapter
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
+            sqlFlavor: 'postgresql',
           }),
+          enableTransactionProxy: true,
         }),
       ],
       global: true,
       middleware: { mount: true },
     }),
+    PrismaModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: SentryGlobalFilter }],
 })

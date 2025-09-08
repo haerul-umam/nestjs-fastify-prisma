@@ -6,8 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../../src/generated/prisma"
-  previewFeatures = ["prismaSchemaFolder"]
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
