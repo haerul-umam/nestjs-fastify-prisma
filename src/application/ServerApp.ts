@@ -39,6 +39,7 @@ export class ServerApplication {
     const port = configService.get('PORT', 4000, { infer: true });
 
     await app.listen(port, '0.0.0.0');
+    console.log(`Application is running on: ${await app.getUrl()}`);
   }
 
   public static new(): ServerApplication {
