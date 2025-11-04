@@ -2,10 +2,13 @@ import { PrismaTransactionalDatabaseService } from '@infrastructure/database/pri
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.domain';
 import { UserEntity } from '../entities/user.entity';
+import { PrismaBaseRepository } from '@core/repositories/prisma-base.repository';
 
 @Injectable()
-export class UserRepository {
-  constructor(private readonly db: PrismaTransactionalDatabaseService) {}
+export class UserRepository extends PrismaBaseRepository {
+  constructor(private readonly db: PrismaTransactionalDatabaseService) {
+    super();
+  }
 
   async getById(id: UserEntity['id']) {
     const user = await this.db.user.findUnique({
@@ -22,8 +25,15 @@ export class UserRepository {
   }
 
   async getAll() {
-    const users = await this.db.user.findMany();
-    return users.map((user) => new User(user.email, user.name, user.id));
+    const { data, meta } = await this.paginate(this.db.user, {
+      page: 1,
+      limit: 10,
+    });
+
+    return {
+      users: data.map((user) => new User(user.email, user.name, user.id)),
+      meta,
+    };
   }
 
   async create(user: User) {
