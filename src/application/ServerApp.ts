@@ -1,4 +1,5 @@
 import helmet from '@fastify/helmet';
+import compression from '@fastify/compress';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -29,7 +30,10 @@ export class ServerApplication {
       }),
     );
 
-    await app.register(helmet);
+    await Promise.all([
+      app.register(helmet),
+      app.register(compression, { encodings: ['gzip', 'deflate'] }),
+    ]);
 
     app.enableVersioning({ type: VersioningType.URI });
     app.enableCors();
