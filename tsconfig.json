@@ -27,7 +27,8 @@
     "rootDirs": [
       "./src",
       "./test"
-    ]
+    ],
+    "typeRoots": ["./node_modules/@types", "./src/type/shared"]
   },
   "include": ["./src/**/*.ts"]
 }

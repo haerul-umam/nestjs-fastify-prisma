@@ -3,8 +3,11 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { ClsModule } from 'nestjs-cls';
+import { join } from 'path';
+import { cwd } from 'process';
 import { validateAllConfigurations } from 'src/core/common/utils/class-validator/env.validation';
 import { AppEnvironment } from 'src/infrastructure/config/app.config';
 import { PrismaModule } from 'src/infrastructure/database/prisma/prisma.module';
@@ -34,6 +37,10 @@ import { PrismaService } from 'src/infrastructure/database/prisma/prisma.service
       ],
       global: true,
       middleware: { mount: true },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(cwd(), 'uploads'),
+      serveRoot: '/uploads',
     }),
     PrismaModule,
   ],

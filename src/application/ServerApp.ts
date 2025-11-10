@@ -1,11 +1,16 @@
 import helmet from '@fastify/helmet';
 import compression from '@fastify/compress';
+import multipart from '@fastify/multipart';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  UnprocessableEntityException,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import { loggerInstance } from '@infrastructure/config/logger.config';
 import { RootModule } from './di/root.module';
@@ -27,12 +32,28 @@ export class ServerApplication {
         transform: true,
         stopAtFirstError: true,
         forbidNonWhitelisted: true,
+        exceptionFactory: (errors) => {
+          const result = errors.map((err) => ({
+            field: err.property,
+            message: err.constraints
+              ? err.constraints[Object.keys(err.constraints)[0]]
+              : 'No constraints available',
+          }));
+          return new UnprocessableEntityException(result);
+        },
       }),
     );
 
     await Promise.all([
       app.register(helmet),
       app.register(compression, { encodings: ['gzip', 'deflate'] }),
+      app.register(multipart, {
+        limits: {
+          fileSize: 10 * 1024 * 1024,
+          fieldSize: 5 * 1024 * 1024,
+          files: 10,
+        },
+      }),
     ]);
 
     app.enableVersioning({ type: VersioningType.URI });
