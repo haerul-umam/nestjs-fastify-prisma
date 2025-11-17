@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { InfrastructureModule } from './infrastructure.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { TransformInterceptor } from '@application/api/http-rest/interceptor/transform.response.interceptor';
-import { UserModule } from 'src/modules/user/user.module';
 import { AppConfigService } from '@infrastructure/config/app.config';
+import { UserModule } from './user.module';
+import { TransformInterceptor } from '@application/api/http-rest/interceptors/transform.response.interceptor';
 
 @Module({
   imports: [InfrastructureModule, UserModule],

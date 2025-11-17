@@ -12,7 +12,7 @@ import { Reflector } from '@nestjs/core';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RESPONSE_MESSAGE_KEY } from '../decorator/message.response.decorator';
+import { RESPONSE_MESSAGE_KEY } from '../decorators/message.response.decorator';
 
 export interface Response<T> {
   data: T;

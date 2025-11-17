@@ -10,9 +10,9 @@ import { GetUsersService } from '../services/get-users.service';
 import { GetUserService } from '../services/get-user.service';
 import { CreateUserService } from '../services/create-user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
-import ResponseMessage from '@application/api/http-rest/decorator/message.response.decorator';
-import { MultipartInterceptor } from '@shared/interceptors/multipart.interceptor';
-import { Files } from '@shared/decorators/file.decorator';
+import ResponseMessage from '@application/api/http-rest/decorators/message.response.decorator';
+import { MultipartInterceptor } from '@application/api/http-rest/interceptors/multipart.interceptor';
+import { Files } from '@application/api/http-rest/decorators/file.decorator';
 import {
   DOCUMENTS_REGEX,
   IMAGES_REGEX,
