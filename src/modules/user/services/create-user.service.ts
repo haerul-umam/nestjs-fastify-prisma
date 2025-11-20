@@ -1,19 +1,29 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { Injectable } from '@nestjs/common';
+import { CreateUserDto, UniqueUserFieldDto } from '../dto/create-user.dto';
 import { UserRepository } from '../repositories/user.repositoriy';
 import { User } from '../entities/user.domain';
+import { DuplicateFieldException } from '@application/errors/duplicate-field.error';
+import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
 export class CreateUserService {
   constructor(private readonly userRepository: UserRepository) {}
+
   async execute(inputDto: CreateUserDto) {
-    const existingUser = await this.userRepository.getByEmail(inputDto.email);
+    const uniqueField = new UniqueUserFieldDto();
+    uniqueField.email = inputDto.email;
+    uniqueField.username = inputDto.username;
+
+    const existingUser =
+      await this.userRepository.getByUniqueField(uniqueField);
+
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      type UniqueUserFieldKey = keyof UniqueUserFieldDto;
+      const field: UniqueUserFieldKey[] = ['email', 'username'];
+      throw new DuplicateFieldException(inputDto, existingUser, field);
     }
 
-    // Convert DTO to domain entity
-    const newUser = User.createNew(inputDto.name, inputDto.email);
-    return this.userRepository.create(newUser);
+    const newUser = await this.userRepository.create(User.createNew(inputDto));
+    return UserMapper.toResponseDto(newUser);
   }
 }

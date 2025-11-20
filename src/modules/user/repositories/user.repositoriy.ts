@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.domain';
 import { UserEntity } from '../entities/user.entity';
 import { PrismaBaseRepository } from '@core/repositories/prisma-base.repository';
+import { UniqueUserFieldDto } from '../dto/create-user.dto';
 
 @Injectable()
 export class UserRepository extends PrismaBaseRepository {
@@ -14,14 +15,18 @@ export class UserRepository extends PrismaBaseRepository {
     const user = await this.db.user.findUnique({
       where: { id },
     });
-    return user ? new User(user.email, user.name, user.id) : null;
+    return user ? new User(user) : null;
   }
 
-  async getByEmail(email: string) {
-    const user = await this.db.user.findUnique({
-      where: { email },
+  async getByUniqueField(field: UniqueUserFieldDto) {
+    const user = await this.db.user.findFirst({
+      where: {
+        OR: Object.keys(field).map((key) => ({
+          [key]: field[key as keyof typeof field],
+        })),
+      },
     });
-    return user ? new User(user.email, user.name, user.id) : null;
+    return user ? new User(user) : null;
   }
 
   async getAll() {
@@ -31,18 +36,21 @@ export class UserRepository extends PrismaBaseRepository {
     });
 
     return {
-      users: data.map((user) => new User(user.email, user.name, user.id)),
+      users: data.map((user) => new User(user)),
       meta,
     };
   }
 
-  async create(user: User) {
+  async create(data: User) {
     const createdUser = await this.db.user.create({
       data: {
-        email: user.email,
-        name: user.name,
+        email: data.email,
+        name: data.name,
+        username: data.username,
+        password_hash: data.password_hash,
+        is_active: data.is_active,
       },
     });
-    return new User(createdUser.email, createdUser.name, createdUser.id);
+    return new User(createdUser);
   }
 }
